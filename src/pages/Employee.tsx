@@ -1,16 +1,48 @@
+import React, { useEffect, useState, createContext, useContext } from "react";
+import {
+  Box,
+  Button,
+  Container,
+  Input,
+ 
+  DialogContent,
+ 
+  DialogTitle,
+ 
+  Stack,
+ 
+} from "@mui/material";
 import { _posts } from '../_mock';
 import { CONFIG } from '../config-global';
 
-import { BlogView } from '../sections/blog/view';
+
 
 // ----------------------------------------------------------------------
-
-export default function Page() {
+interface Todo {
+  id: string;
+  item: string;
+}
+const TodosContext = createContext({
+  todos: [], fetchTodos: () => {}
+})
+export default function Employee() {
+  const [todos, setTodos] = useState([])
+  const fetchTodos = async () => {
+    const response = await fetch("http://localhost:8000/todo")
+    const todos = await response.json()
+    setTodos(todos.data)
+  }
+  useEffect(() => {
+    fetchTodos()
+  }, [])
+   
   return (
     <>
-      <title>{`Blog - ${CONFIG.appName}`}</title>
-
-      <BlogView posts={_posts} />
+      <title>{`Employee - ${CONFIG.appName}`}</title>
+<TodosContext.Provider value={{todos, fetchTodos}}>
+  
+    </TodosContext.Provider>
+     
     </>
   );
 }
