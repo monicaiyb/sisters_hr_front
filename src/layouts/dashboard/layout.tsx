@@ -6,7 +6,7 @@ import { useBoolean } from 'minimal-shared/hooks';
 import Box from '@mui/material/Box';
 import Alert from '@mui/material/Alert';
 import { useTheme } from '@mui/material/styles';
-
+import {Providers} from '../../redux/providers'
 import { _langs, _notifications } from '../../_mock';
 
 import { NavMobile, NavDesktop } from './nav';
@@ -108,7 +108,8 @@ export function DashboardLayout({
   const renderMain = () => <MainSection {...slotProps?.main}>{children}</MainSection>;
 
   return (
-    <LayoutSection
+      <Providers>
+         <LayoutSection
       /** **************************************
        * @Header
        *************************************** */
@@ -144,5 +145,7 @@ export function DashboardLayout({
     >
       {renderMain()}
     </LayoutSection>
+          </Providers>
+  
   );
 }
