@@ -24,9 +24,13 @@ export const userApi = createApi({
     
     }),
     refreshToken: builder.mutation({
-      query: () => ({
+      query: (data) => ({
       url: "/auth/refresh",
       method: "POST",
+       headers: {
+          "Content-type": "application/json",
+        },
+        body: data,
       }),
     }),
     sendLogout: builder.mutation({
@@ -38,7 +42,7 @@ export const userApi = createApi({
         try {
           //const { data } =
           await queryFulfilled;
-          //console.log(data)
+          //console.log(data) 
           // dispatch(logout());
           dispatch(userApi.util.resetApiState());
         } catch (err) {
