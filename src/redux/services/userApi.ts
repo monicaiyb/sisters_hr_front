@@ -20,7 +20,8 @@ export const userApi = createApi({
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    })
+    }),
+    
     }),
     refreshToken: builder.mutation({
       query: () => ({
@@ -38,7 +39,7 @@ export const userApi = createApi({
           //const { data } =
           await queryFulfilled;
           //console.log(data)
-          //dispatch(logout());
+          // dispatch(logout());
           dispatch(userApi.util.resetApiState());
         } catch (err) {
           console.log(err);

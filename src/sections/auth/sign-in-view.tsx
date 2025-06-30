@@ -1,31 +1,100 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback,useEffect } from 'react';
 
-import Box from '@mui/material/Box';
-import Link from '@mui/material/Link';
+import { Box, Container } from '@mui/material';
+import Link  from '@mui/material/Link';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import TextField from '@mui/material/TextField';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import InputAdornment from '@mui/material/InputAdornment';
+import {  useLocation, useNavigate } from 'react-router-dom';
+import  { object, string } from 'zod';
+import type {TypeOf}  from 'zod';
+import  { FormProvider,  useForm } from 'react-hook-form';
+import  type {SubmitHandler} from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { toast } from 'react-toastify';
 
 import { useRouter } from '../../routes/hooks';
 
 import { Iconify } from '../../components/iconify';
+import { useLoginMutation } from '../../redux/services/userApi';
 
 // ----------------------------------------------------------------------
+const loginSchema = object({
+  email: string()
+    .min(1, 'Email address is required')
+    .email('Email Address is invalid'),
+  password: string()
+    .min(1, 'Password is required')
+    .min(8, 'Password must be more than 8 characters')
+    .max(32, 'Password must be less than 32 characters'),
+});
+
+export type LoginInput = TypeOf<typeof loginSchema>;
+
+
 
 export function SignInView() {
-  const router = useRouter();
+    const methods = useForm<LoginInput>({
+    resolver: zodResolver(loginSchema),
+  });
+
+
+  const [loginUser, { isLoading, isError, error, isSuccess }] =
+    useLoginMutation();
+     const navigate = useNavigate();
+  const location = useLocation();
+   const from = ((location.state as any)?.from.pathname as string) || '/';
+     const {
+    reset,
+    handleSubmit,
+    formState: { isSubmitSuccessful },
+  } = methods;
 
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleSignIn = useCallback(() => {
-    router.push('/');
-  }, [router]);
 
+ useEffect(() => {
+    if (isSuccess) {
+      toast.success('You successfully logged in');
+      console.log('It was successful');
+      navigate(from);
+    }
+    if (isError) {
+      if (Array.isArray((error as any).data.error)) {
+        (error as any).data.error.forEach((el: any) =>
+          toast.error(el.message, {
+            position: 'top-right',
+          })
+        );
+      } else {
+        toast.error((error as any).data.message, {
+          position: 'top-right',
+        });
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoading]);
+
+  useEffect(() => {
+    if (isSubmitSuccessful) {
+      reset();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSubmitSuccessful]);
+
+  const onSubmitHandler: SubmitHandler<LoginInput> = (values) => {
+    // 👇 Executing the loginUser Mutation
+    loginUser(values);
+  };
   const renderForm = (
+     <FormProvider {...methods}>
     <Box
+    component='form'
+            onSubmit={handleSubmit(onSubmitHandler)}
+            noValidate
       sx={{
         display: 'flex',
         alignItems: 'flex-end',
@@ -74,11 +143,15 @@ export function SignInView() {
         type="submit"
         color="inherit"
         variant="contained"
-        onClick={handleSignIn}
+        
+        loading={isLoading}
       >
         Sign in
       </Button>
+
+    
     </Box>
+    </FormProvider>
   );
 
   return (
