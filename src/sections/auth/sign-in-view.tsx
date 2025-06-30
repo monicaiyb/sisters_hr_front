@@ -7,6 +7,7 @@ import Divider from '@mui/material/Divider';
 import TextField from '@mui/material/TextField';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
+import { LoadingButton } from '@mui/lab';
 import InputAdornment from '@mui/material/InputAdornment';
 import {  useLocation, useNavigate } from 'react-router-dom';
 import  { object, string } from 'zod';
@@ -149,7 +150,16 @@ export function SignInView() {
         Sign in
       </Button>
 
-    
+      <LoadingButton
+              variant='contained'
+              sx={{ mt: 1 }}
+              fullWidth
+              disableElevation
+              type='submit'
+              loading={isLoading}
+            >
+              Login
+            </LoadingButton>
     </Box>
     </FormProvider>
   );
