@@ -12,7 +12,7 @@ import {
   Stack,
  
 } from "@mui/material";
-import { _posts } from '../_mock';
+
 import { CONFIG } from '../config-global';
 
 

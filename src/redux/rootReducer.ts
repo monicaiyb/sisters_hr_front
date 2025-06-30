@@ -1,8 +1,9 @@
-import { combineReducers } from "redux";
-import userReducer from "./reducers/userReducer";
+  import { combineReducers } from "@reduxjs/toolkit";
+   import { employeeApi } from "../services/employeeApi";
 
-const rootReducer = combineReducers({
-  user: userReducer,
-});
+   export const rootReducer = combineReducers({
+    [employeeApi.reducerPath]: employeeApi.reducer,
+   });
 
-export default rootReducer;
+   export type RootState = ReturnType<typeof rootReducer>
+

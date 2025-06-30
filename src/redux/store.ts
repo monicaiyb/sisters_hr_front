@@ -1,12 +1,18 @@
-import { configureStore } from "@reduxjs/toolkit";
-   import { setupListeners } from "@reduxjs/toolkit/query";
-   import { rootReducer } from "./rootReducer";
-   import { userApi } from "./services/apiSlice";
+import { configureStore, Tuple  } from "@reduxjs/toolkit";
 
-   export const store = configureStore({
-    reducer: rootReducer,
-    middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(userApi.middleware),
-   });
-   setupListeners(store.dispatch)
-   export type RootState = ReturnType<typeof store.getState>;
-   export type AppDispatch = typeof store.dispatch;
+import {rootReducer} from "./rootReducer";
+
+
+const store = configureStore({
+  reducer: rootReducer,
+   middleware: (getDefaultMiddleware) =>
+        getDefaultMiddleware({
+            immutableCheck: false,
+            serializableCheck: false
+        })
+})
+
+
+
+export type AppDispatch = typeof store.dispatch;
+export default store;
