@@ -9,7 +9,7 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import { LoadingButton } from '@mui/lab';
 import InputAdornment from '@mui/material/InputAdornment';
-import {  useLocation, useNavigate } from 'react-router-dom';
+import {  data, useLocation, useNavigate } from 'react-router-dom';
 import  { object, string } from 'zod';
 import type {TypeOf}  from 'zod';
 import  { FormProvider,  useForm } from 'react-hook-form';
@@ -42,9 +42,10 @@ export function SignInView() {
     resolver: zodResolver(loginSchema),
   });
 
-
+console.log(loginSchema);
   const [loginUser, { isLoading, isError, error, isSuccess }] =
     useLoginMutation();
+  
      const navigate = useNavigate();
   const location = useLocation();
    const from = ((location.state as any)?.from.pathname as string) || '/';
@@ -54,30 +55,34 @@ export function SignInView() {
     formState: { isSubmitSuccessful },
   } = methods;
 
+  // console.log(methods);
+
   const [showPassword, setShowPassword] = useState(false);
 
 
- useEffect(() => {
-    if (isSuccess) {
-      toast.success('You successfully logged in');
-      console.log('It was successful');
-      navigate(from);
+useEffect(() => {
+    console.log(data);
+  if (isSuccess) {
+    toast.success('You successfully logged in');
+    console.log('It was successful');
+    navigate(from);
+  }
+
+  if (isError) {
+    const err = error as any;
+    
+    if (Array.isArray(err?.data?.error)) {
+      err.data.error.forEach((el: any) =>
+        toast.error(el.message, { position: 'top-right' })
+      );
+    } else {
+      toast.error(err?.data?.message || 'Login failed', {
+        position: 'top-right',
+      });
     }
-    if (isError) {
-      if (Array.isArray((error as any).data.error)) {
-        (error as any).data.error.forEach((el: any) =>
-          toast.error(el.message, {
-            position: 'top-right',
-          })
-        );
-      } else {
-        toast.error((error as any).data.message, {
-          position: 'top-right',
-        });
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isLoading]);
+  }
+}, [isSuccess, isError, error, navigate, from]);
+
 
   useEffect(() => {
     if (isSubmitSuccessful) {
@@ -87,6 +92,7 @@ export function SignInView() {
   }, [isSubmitSuccessful]);
 
   const onSubmitHandler: SubmitHandler<LoginInput> = (values) => {
+    console.log(values)
     // 👇 Executing the loginUser Mutation
     loginUser(values);
   };
